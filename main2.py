@@ -87,6 +87,8 @@ if __name__ == "__main__":
             print(f"{Fore.RED}Please enter a positive integer.{Style.RESET_ALL}")
         else:
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
+
+            # Start displaying counts immediately after input
             asyncio.run(run(num_codes_to_generate))
 
     except ValueError:
