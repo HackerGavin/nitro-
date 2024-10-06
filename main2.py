@@ -1,9 +1,9 @@
 import requests
 import random
 import string
-from concurrent.futures import ThreadPoolExecutor
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 valid_codes = []
 invalid_count = 0
@@ -12,16 +12,14 @@ lock = threading.Lock()
 
 def generate_code(length=19):
     characters = string.ascii_letters + string.digits
-    code = ''.join(random.choice(characters) for _ in range(length))
-    return code
+    return ''.join(random.choice(characters) for _ in range(length))
 
 def check_code_validity(code):
     url = f"https://discord.com/api/v8/entitlements/gift-codes/{code}"
     try:
         response = requests.get(url)
         return response.status_code == 200
-    except requests.RequestException as e:
-        print(f"Request failed: {e}")
+    except requests.RequestException:
         return False
 
 def process_code(_):
@@ -29,16 +27,13 @@ def process_code(_):
     generated_code = generate_code()
     full_code = f"https://discord.gift/{generated_code}"
     
-    is_valid = check_code_validity(generated_code)
-    
-    with lock:
-        if is_valid:
+    if check_code_validity(generated_code):
+        with lock:
             valid_codes.append(full_code)
             valid_count += 1
-            return f"Valid code: {full_code}"
-        else:
+    else:
+        with lock:
             invalid_count += 1
-            return None  # Avoid spamming invalid links
 
 def display_counts():
     while True:
@@ -48,19 +43,14 @@ def display_counts():
 
 def main(num_codes):
     print("Successfully generating codes...")
-
+    
     display_thread = threading.Thread(target=display_counts)
     display_thread.daemon = True
     display_thread.start()
 
-    try:
-        with ThreadPoolExecutor(max_workers=20) as executor:
-            executor.map(process_code, range(num_codes))
-    except Exception as e:
-        print(f"\nError occurred: {e}")
-        return
-
-    # Wait for the user to input 'v'
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        executor.map(process_code, range(num_codes))
+    
     while True:
         user_input = input("\nPress 'v' to view valid codes or 'q' to quit: ").strip().lower()
         if user_input == 'v':
