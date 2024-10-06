@@ -71,7 +71,7 @@ def view_valid_codes():
 def check_for_view_input():
     """Check for user input to view valid codes."""
     while True:
-        user_input = input()
+        user_input = input()  # Wait for input from the user
         if user_input.lower() == 'v':
             view_valid_codes()
 
@@ -90,10 +90,14 @@ if __name__ == "__main__":
         else:
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
 
-            # Start the status report thread
+            # Start the status report and input check threads
             threading.Thread(target=status_report, daemon=True).start()
             threading.Thread(target=check_for_view_input, daemon=True).start()
             main(num_codes_to_generate)
+
+            # Wait for threads to complete
+            while threading.active_count() > 1:
+                time.sleep(1)
 
     except ValueError:
         print(f"{Fore.RED}Invalid input. Please enter a number.{Style.RESET_ALL}")
