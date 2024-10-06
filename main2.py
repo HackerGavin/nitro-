@@ -35,6 +35,7 @@ async def update_counts(valid, code=None):
 async def display_counts():
     """Display the counts of valid and invalid codes live."""
     while True:
+        # Clear the previous line and print updated counts
         print(f"\rInvalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}", end="")
         await asyncio.sleep(1)  # Update every second
 
@@ -89,7 +90,7 @@ if __name__ == "__main__":
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
 
             # Start displaying counts immediately after input
-            await run(num_codes_to_generate)  # Use asyncio.run() directly
+            asyncio.run(run(num_codes_to_generate))
 
     except ValueError:
         print(f"{Fore.RED}Invalid input. Please enter a number.{Style.RESET_ALL}")
