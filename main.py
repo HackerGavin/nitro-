@@ -40,10 +40,6 @@ def status_report():
         time.sleep(60)  # Wait for 1 minute
         with lock:
             print(f"{Fore.LIGHTYELLOW_EX}Invalid Codes: {Fore.RED}{invalid_count} {Fore.LIGHTYELLOW_EX}| Valid Codes: {Fore.GREEN}{valid_count} (Press 'v' to view){Style.RESET_ALL}")
-            if valid_count > 0:
-                view_option = input(f"{Fore.LIGHTYELLOW_EX}Press 'v' to view valid codes or any other key to continue: {Style.RESET_ALL}")
-                if view_option.lower() == 'v':
-                    view_valid_codes()
 
 def main(num_codes):
     """Generate and check validity of gift codes."""
@@ -72,6 +68,13 @@ def view_valid_codes():
         else:
             print(f"{Fore.RED}No valid codes have been found.{Style.RESET_ALL}")
 
+def check_for_view_input():
+    """Check for user input to view valid codes."""
+    while True:
+        user_input = input()
+        if user_input.lower() == 'v':
+            view_valid_codes()
+
 if __name__ == "__main__":
     print(f"{Fore.MAGENTA}███╗░░░███╗░█████╗░██████╗░███████╗  ██████╗░██╗░░░██╗  ███████╗░█████╗░░██████╗████████╗██╗██╗░░██╗")
     print(f"{Fore.MAGENTA}████╗░████║██╔══██╗██╔══██╗██╔════╝  ██╔══██╗╚██╗░██╔╝  ╚════██║██╔══██╗██╔════╝╚══██╔══╝██║╚██╗██╔╝")
@@ -89,6 +92,7 @@ if __name__ == "__main__":
 
             # Start the status report thread
             threading.Thread(target=status_report, daemon=True).start()
+            threading.Thread(target=check_for_view_input, daemon=True).start()
             main(num_codes_to_generate)
 
     except ValueError:
