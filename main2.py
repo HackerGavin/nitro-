@@ -47,13 +47,19 @@ def display_counts():
         time.sleep(1)
 
 def main(num_codes):
+    print("Successfully generating codes...")
+
     display_thread = threading.Thread(target=display_counts)
     display_thread.daemon = True
     display_thread.start()
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
-        executor.map(process_code, range(num_codes))
-    
+    try:
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            executor.map(process_code, range(num_codes))
+    except Exception as e:
+        print(f"\nError occurred: {e}")
+        return
+
     # Wait for the user to input 'v'
     while True:
         user_input = input("\nPress 'v' to view valid codes or 'q' to quit: ").strip().lower()
