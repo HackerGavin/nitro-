@@ -2,8 +2,6 @@ import asyncio
 import random
 import string
 import aiohttp
-import os
-import sys
 from colorama import init, Fore, Style
 
 # Initialize Colorama
@@ -37,8 +35,7 @@ async def update_counts(valid, invalid, code=None):
 async def display_counts():
     """Display the counts of valid and invalid codes live."""
     while True:
-        os.system('cls' if os.name == 'nt' else 'clear')  # Clear the console
-        print(f"{Fore.LIGHTYELLOW_EX}Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}{Style.RESET_ALL}")
+        print(f"\rInvalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}", end="")
         await asyncio.sleep(1)  # Update every second
 
 async def main(num_codes):
@@ -57,8 +54,7 @@ async def main(num_codes):
             await update_counts(result, not result, code)
 
     # Final results
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(f"{Fore.LIGHTYELLOW_EX}Final Results: Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}{Style.RESET_ALL}")
+    print(f"\nFinal Results: Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}{Style.RESET_ALL}")
     if valid_count > 0:
         print(f"{Fore.LIGHTYELLOW_EX}Valid codes have been generated. You can view them using the command below.{Style.RESET_ALL}")
     else:
