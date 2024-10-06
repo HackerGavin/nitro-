@@ -1,94 +1,68 @@
-import asyncio
+import requests
 import random
 import string
-import aiohttp
-from colorama import init, Fore, Style
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
-# Initialize Colorama
-init(autoreset=True)
-
-# Global variables for counting codes
-valid_count = 0
+valid_codes = []
 invalid_count = 0
-valid_codes_list = []
+valid_count = 0
+lock = threading.Lock()
 
-async def generate_code(length=19):
-    """Generate a random code of specified length."""
+def generate_code(length=19):
     characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for _ in range(length))
+    code = ''.join(random.choice(characters) for _ in range(length))
+    return code
 
-async def check_code_validity(session, code):
-    """Check if the generated code is valid using Discord's API."""
+def check_code_validity(code):
     url = f"https://discord.com/api/v8/entitlements/gift-codes/{code}"
-    async with session.get(url) as response:
-        return response.status == 200
+    response = requests.get(url)
+    return response.status_code == 200
 
-async def update_counts(valid, code=None):
-    """Update global counts."""
-    global valid_count, invalid_count, valid_codes_list
-    if valid:
-        valid_count += 1
-        valid_codes_list.append(f"https://discord.gift/{code}")
-    else:
-        invalid_count += 1
+def process_code(_):
+    global valid_count, invalid_count
+    generated_code = generate_code()
+    full_code = f"https://discord.gift/{generated_code}"
+    
+    is_valid = check_code_validity(generated_code)
+    
+    with lock:
+        if is_valid:
+            valid_codes.append(full_code)
+            valid_count += 1
+            return f"Valid code: {full_code}"
+        else:
+            invalid_count += 1
+            return None  # Avoid spamming invalid links
 
-async def display_counts():
-    """Display the counts of valid and invalid codes live."""
+def display_counts():
     while True:
-        # Display counts with orange text for labels and numbers
-        print(f"\r{Fore.LIGHTYELLOW_EX}Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}", end="")
-        await asyncio.sleep(1)  # Update every second
+        with lock:
+            print(f"\rValid codes: {valid_count} | Invalid codes: {invalid_count}", end="")
+        time.sleep(1)
 
-async def main(num_codes):
-    """Generate and check validity of gift codes."""
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for _ in range(num_codes):
-            generated_code = await generate_code()
-            tasks.append(check_code_validity(session, generated_code))
-        
-        results = await asyncio.gather(*tasks)
+def main(num_codes):
+    display_thread = threading.Thread(target=display_counts)
+    display_thread.daemon = True
+    display_thread.start()
 
-        # Update counts based on results
-        for result, code in zip(results, [await generate_code() for _ in range(num_codes)]):
-            await update_counts(result, code)
-
-async def run(num_codes_to_generate):
-    """Run the main code generation and input check."""
-    await asyncio.gather(
-        display_counts(),
-        check_for_view_input(),
-        main(num_codes_to_generate)
-    )
-
-def view_valid_codes():
-    """Display valid codes when requested."""
-    if valid_count > 0:
-        print(f"\n{Fore.LIGHTYELLOW_EX}Here are the valid codes:{Style.RESET_ALL}")
-        for code in valid_codes_list:
-            print(f"{Fore.GREEN}{code}{Style.RESET_ALL}")
-    else:
-        print(f"{Fore.RED}No valid codes have been found.{Style.RESET_ALL}")
-
-async def check_for_view_input():
-    """Check for user input to view valid codes."""
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        executor.map(process_code, range(num_codes))
+    
+    # Wait for the user to input 'v'
     while True:
-        user_input = input()  # Wait for input from the user
-        if user_input.lower() == 'v':
-            view_valid_codes()
+        user_input = input("\nPress 'v' to view valid codes or 'q' to quit: ").strip().lower()
+        if user_input == 'v':
+            if valid_codes:
+                print("Valid codes found:")
+                for code in valid_codes:
+                    print(code)
+            else:
+                print("No valid codes yet.")
+        elif user_input == 'q':
+            break
 
 if __name__ == "__main__":
-    print(f"{Fore.MAGENTA}Discord Code Generator (Optimized)")
-
-    try:
-        num_codes_to_generate = int(input(f"{Fore.LIGHTYELLOW_EX}Enter the number of codes to generate: {Style.RESET_ALL}"))
-        if num_codes_to_generate < 1:
-            print(f"{Fore.RED}Please enter a positive integer.{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
-
-            # Start the tasks and display the counter
-            asyncio.run(run(num_codes_to_generate))
-
-    except ValueError:
-        print(f"{Fore.RED}Invalid input. Please enter a number.{Style.RESET_ALL}")
+    import time
+    num_codes_to_generate = int(input("Enter the number of codes to generate: "))
+    main(num_codes_to_generate)
