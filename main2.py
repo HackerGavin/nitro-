@@ -23,7 +23,7 @@ async def check_code_validity(session, code):
     async with session.get(url) as response:
         return response.status == 200
 
-async def update_counts(valid, invalid, code=None):
+async def update_counts(valid, code=None):
     """Update global counts."""
     global valid_count, invalid_count, valid_codes_list
     if valid:
@@ -40,8 +40,6 @@ async def display_counts():
 
 async def main(num_codes):
     """Generate and check validity of gift codes."""
-    global valid_count, invalid_count
-
     async with aiohttp.ClientSession() as session:
         tasks = []
         for _ in range(num_codes):
@@ -51,7 +49,7 @@ async def main(num_codes):
         results = await asyncio.gather(*tasks)
 
         for result, code in zip(results, [await generate_code() for _ in range(num_codes)]):
-            await update_counts(result, not result, code)
+            await update_counts(result, code)
 
     # Final results
     print(f"\nFinal Results: Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}{Style.RESET_ALL}")
