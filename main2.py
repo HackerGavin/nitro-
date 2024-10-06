@@ -46,23 +46,26 @@ async def main(num_codes):
         for _ in range(num_codes):
             generated_code = await generate_code()
             tasks.append(check_code_validity(session, generated_code))
-
+        
         results = await asyncio.gather(*tasks)
 
+        # Update counts based on results
         for result, code in zip(results, [await generate_code() for _ in range(num_codes)]):
             await update_counts(result, code)
 
-    # Final results
-    print(f"\nFinal Results: Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}{Style.RESET_ALL}")
-    if valid_count > 0:
-        print(f"{Fore.LIGHTYELLOW_EX}Valid codes have been generated. You can view them using the command below.{Style.RESET_ALL}")
-    else:
-        print(f"{Fore.RED}No valid codes found.{Style.RESET_ALL}")
+async def run(num_codes_to_generate):
+    """Run the main code generation and input check."""
+    # Start tasks for display counts, checking user input, and main code generation
+    await asyncio.gather(
+        display_counts(),
+        check_for_view_input(),
+        main(num_codes_to_generate)
+    )
 
 def view_valid_codes():
     """Display valid codes when requested."""
     if valid_count > 0:
-        print(f"{Fore.LIGHTYELLOW_EX}Here are the valid codes:{Style.RESET_ALL}")
+        print(f"\n{Fore.LIGHTYELLOW_EX}Here are the valid codes:{Style.RESET_ALL}")
         for code in valid_codes_list:
             print(f"{Fore.GREEN}{code}{Style.RESET_ALL}")
     else:
@@ -75,10 +78,6 @@ async def check_for_view_input():
         if user_input.lower() == 'v':
             view_valid_codes()
 
-async def run(num_codes_to_generate):
-    """Run the main code generation and input check."""
-    await asyncio.gather(check_for_view_input(), display_counts(), main(num_codes_to_generate))
-
 if __name__ == "__main__":
     print(f"{Fore.MAGENTA}Discord Code Generator (Optimized)")
 
@@ -89,7 +88,7 @@ if __name__ == "__main__":
         else:
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
 
-            # Start displaying counts immediately after input
+            # Start the tasks and display the counter
             asyncio.run(run(num_codes_to_generate))
 
     except ValueError:
