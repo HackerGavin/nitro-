@@ -35,7 +35,7 @@ async def update_counts(valid, code=None):
 async def display_counts():
     """Display the counts of valid and invalid codes live."""
     while True:
-        # Clear the previous line and print updated counts with orange text
+        # Display counts with orange text for labels
         print(f"\r{Fore.LIGHTYELLOW_EX}Invalid Codes: {Fore.RED}{invalid_count} | Valid Codes: {Fore.GREEN}{valid_count}", end="")
         await asyncio.sleep(1)  # Update every second
 
