@@ -89,7 +89,7 @@ if __name__ == "__main__":
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
 
             # Start displaying counts immediately after input
-            asyncio.run(run(num_codes_to_generate))
+            await run(num_codes_to_generate)  # Use asyncio.run() directly
 
     except ValueError:
         print(f"{Fore.RED}Invalid input. Please enter a number.{Style.RESET_ALL}")
