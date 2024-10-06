@@ -1,7 +1,7 @@
-import aiohttp
-import asyncio
 import random
 import string
+import asyncio
+import aiohttp
 
 async def generate_code(length=19):
     characters = string.ascii_letters + string.digits
@@ -15,15 +15,14 @@ async def check_code_validity(session, code):
 async def main(num_codes):
     async with aiohttp.ClientSession() as session:
         tasks = []
-        
         for _ in range(num_codes):
             generated_code = await generate_code()
+            full_code = f"https://discord.gift/{generated_code}"
             tasks.append(check_code_validity(session, generated_code))
-        
+
         results = await asyncio.gather(*tasks)
         
         for i, valid in enumerate(results):
-            full_code = f"https://discord.gift/{await generate_code()}"
             if valid:
                 print(f"Valid code: {full_code}")
             else:
