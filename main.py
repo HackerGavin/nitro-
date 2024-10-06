@@ -19,10 +19,8 @@ def main(num_codes):
     
     for _ in range(num_codes):
         generated_code = generate_code()
-        full_code = f"https://discord.gift/{generated_code}"
-        
         if check_code_validity(generated_code):
-            valid_codes.append(full_code)
+            valid_codes.append(f"https://discord.gift/{generated_code}")
 
     # Print all valid codes at once
     if valid_codes:
