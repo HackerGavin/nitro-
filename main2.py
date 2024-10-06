@@ -3,6 +3,7 @@ import random
 import string
 from concurrent.futures import ThreadPoolExecutor
 import threading
+import time
 
 valid_codes = []
 invalid_count = 0
@@ -47,22 +48,22 @@ def main(num_codes):
     display_thread.start()
 
     with ThreadPoolExecutor(max_workers=20) as executor:
-        executor.map(process_code, range(num_codes))
+        results = list(executor.map(process_code, range(num_codes)))
     
     # Wait for the user to input 'v'
     while True:
         user_input = input("\nPress 'v' to view valid codes or 'q' to quit: ").strip().lower()
         if user_input == 'v':
-            if valid_codes:
-                print("Valid codes found:")
-                for code in valid_codes:
-                    print(code)
-            else:
-                print("No valid codes yet.")
+            with lock:
+                if valid_codes:
+                    print("Valid codes found:")
+                    for code in valid_codes:
+                        print(code)
+                else:
+                    print("No valid codes yet.")
         elif user_input == 'q':
             break
 
 if __name__ == "__main__":
-    import time
     num_codes_to_generate = int(input("Enter the number of codes to generate: "))
     main(num_codes_to_generate)
