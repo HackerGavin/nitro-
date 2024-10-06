@@ -76,6 +76,10 @@ async def check_for_view_input():
         if user_input.lower() == 'v':
             view_valid_codes()
 
+async def run(num_codes_to_generate):
+    """Run the main code generation and input check."""
+    await asyncio.gather(check_for_view_input(), display_counts(), main(num_codes_to_generate))
+
 if __name__ == "__main__":
     print(f"{Fore.MAGENTA}Discord Code Generator (Optimized)")
 
@@ -85,10 +89,7 @@ if __name__ == "__main__":
             print(f"{Fore.RED}Please enter a positive integer.{Style.RESET_ALL}")
         else:
             print(f"{Fore.LIGHTYELLOW_EX}Generating codes...{Style.RESET_ALL}")
-
-            # Start the input check coroutine and display counts
-            await asyncio.gather(check_for_view_input(), display_counts())
-            await main(num_codes_to_generate)
+            asyncio.run(run(num_codes_to_generate))
 
     except ValueError:
         print(f"{Fore.RED}Invalid input. Please enter a number.{Style.RESET_ALL}")
