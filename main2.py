@@ -3,6 +3,7 @@ import random
 import string
 import threading
 import time
+import sys
 
 class CodeGenerator:
     def __init__(self):
@@ -40,7 +41,8 @@ class CodeGenerator:
     def display_counts(self):
         while self.running:
             with self.lock:
-                print(f"\rValid codes: {self.valid_count} | Invalid codes: {self.invalid_count}", end="")
+                # Use flush to force the print to update immediately
+                print(f"\rValid codes: {self.valid_count} | Invalid codes: {self.invalid_count}", end="", flush=True)
             time.sleep(0.2)  # Update every 0.2 seconds
 
     def start(self, num_threads):
