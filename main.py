@@ -1,13 +1,10 @@
 import requests
 import random
 import string
+from colorama import init, Fore, Style
 
-# ANSI escape codes for colors
-PURPLE = "\033[95m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-RED = "\033[91m"
-RESET = "\033[0m"
+# Initialize Colorama
+init(autoreset=True)
 
 def generate_code(length=19):
     """Generate a random code of specified length."""
@@ -35,22 +32,22 @@ def main(num_codes):
         for code in valid_codes:
             print(code)
     else:
-        print(f"{RED}No valid codes found.{RESET}")
+        print(f"{Fore.RED}No valid codes found.")
 
 if __name__ == "__main__":
-    print(f"{PURPLE}███╗░░░███╗░█████╗░██████╗░███████╗  ██████╗░██╗░░░██╗  ███████╗░█████╗░░██████╗████████╗██╗██╗░░██╗")
-    print(f"{PURPLE}████╗░████║██╔══██╗██╔══██╗██╔════╝  ██╔══██╗╚██╗░██╔╝  ╚════██║██╔══██╗██╔════╝╚══██╔══╝██║╚██╗██╔╝")
-    print(f"{PURPLE}██╔████╔██║███████║██║░░██║█████╗░░  ██████╦╝░╚████╔╝░  ░░███╔═╝███████║╚█████╗░░░░██║░░░██║░╚███╔╝░")
-    print(f"{PURPLE}██║╚██╔╝██║██╔══██║██║░░██║██╔══╝░░  ██╔══██╗░░╚██╔╝░░  ██╔══╝░░██╔══██║░╚═══██╗░░░██║░░░██║░██╔██╗░")
-    print(f"{PURPLE}██║░╚═╝░██║██║░░██║██████╔╝███████╗  ██████╦╝░░░██║░░░  ███████╗██║░░██║██████╔╝░░░██║░░░██║██╔╝╚██╗")
-    print(f"{PURPLE}╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═════╝░╚══════╝  ╚═════╝░░░░╚═╝░░░  ╚══════╝╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═╝╚═╝░░╚═╝{RESET}")
+    print(f"{Fore.MAGENTA}███╗░░░███╗░█████╗░██████╗░███████╗  ██████╗░██╗░░░██╗  ███████╗░█████╗░░██████╗████████╗██╗██╗░░██╗")
+    print(f"{Fore.MAGENTA}████╗░████║██╔══██╗██╔══██╗██╔════╝  ██╔══██╗╚██╗░██╔╝  ╚════██║██╔══██╗██╔════╝╚══██╔══╝██║╚██╗██╔╝")
+    print(f"{Fore.MAGENTA}██╔████╔██║███████║██║░░██║█████╗░░  ██████╦╝░╚████╔╝░  ░░███╔═╝███████║╚█████╗░░░░██║░░░██║░╚███╔╝░")
+    print(f"{Fore.MAGENTA}██║╚██╔╝██║██╔══██║██║░░██║██╔══╝░░  ██╔══██╗░░╚██╔╝░░  ██╔══╝░░██╔══██║░╚═══██╗░░░██║░░░██║░██╔██╗░")
+    print(f"{Fore.MAGENTA}██║░╚═╝░██║██║░░██║██████╔╝███████╗  ██████╦╝░░░██║░░░  ███████╗██║░░██║██████╔╝░░░██║░░░██║██╔╝╚██╗")
+    print(f"{Fore.MAGENTA}╚═╝░░░░░╚═╝╚═╝░░╚═╝╚═════╝░╚══════╝  ╚═════╝░░░░╚═╝░░░  ╚══════╝╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░╚═╝╚═╝░░╚═╝")
 
     try:
-        num_codes_to_generate = int(input(f"{GREEN}Enter the number of codes to generate: {RESET}"))
+        num_codes_to_generate = int(input(f"{Fore.GREEN}Enter the number of codes to generate: {Style.RESET_ALL}"))
         if num_codes_to_generate < 1:
             print("Please enter a positive integer.")
         else:
-            print(f"{YELLOW}Generating codes...{RESET}")
+            print(f"{Fore.YELLOW}Generating codes...{Style.RESET_ALL}")
             main(num_codes_to_generate)
     except ValueError:
         print("Invalid input. Please enter a number.")
