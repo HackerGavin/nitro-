@@ -17,8 +17,12 @@ def generate_code(length=19):
 
 def check_code_validity(code):
     url = f"https://discord.com/api/v8/entitlements/gift-codes/{code}"
-    response = requests.get(url)
-    return response.status_code == 200
+    try:
+        response = requests.get(url)
+        return response.status_code == 200
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return False
 
 def process_code(_):
     global valid_count, invalid_count
@@ -48,7 +52,7 @@ def main(num_codes):
     display_thread.start()
 
     with ThreadPoolExecutor(max_workers=20) as executor:
-        results = list(executor.map(process_code, range(num_codes)))
+        executor.map(process_code, range(num_codes))
     
     # Wait for the user to input 'v'
     while True:
